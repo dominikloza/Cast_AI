@@ -13,7 +13,7 @@ export const generateAudioAction = action({
         input: v.string(),
         voice: v.string(),
     },
-    handler: async (ctx, args) => {
+    handler: async (_, args) => {
         const audio = await elevenlabs.generate({
             voice: args.voice,
             text: args.input,

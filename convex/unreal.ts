@@ -10,7 +10,7 @@ export const generateAudioAction = action({
         input: v.string(),
         voice: v.string(),
     },
-    handler: async (ctx, args) => {
+    handler: async (_, args) => {
         const speechBuffer = await unrealSpeech.stream(
             args.input,
             args.voice,

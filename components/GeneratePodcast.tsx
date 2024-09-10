@@ -13,11 +13,9 @@ import { useUploadFiles } from "@xixixao/uploadstuff/react";
 function getConvexApibyProvider(provider: string = "Openai") {
     return provider === "Openai"
         ? api.openai
-        : provider === "Eleven Labs"
-            ? api.elevenlabs
-            : provider === "Unreal Speech"
-                ? api.unreal
-                : api.openai;
+        : provider === "Unreal Speech"
+            ? api.unreal
+            : api.openai;
 }
 
 const useGeneratePodcast = ({
@@ -45,12 +43,26 @@ const useGeneratePodcast = ({
             return setIsGenerating(false);
         }
         try {
-            const response = await getPodcastAudio({
-                input: voicePrompt,
-                voice: voiceType,
-            });
+            let blob;
+            if (voiceProvider === 'Openai' || voiceProvider === 'Unreal Speech') {
+                const response = await getPodcastAudio({
+                    input: voicePrompt,
+                    voice: voiceType
+                })
+                blob = new Blob([response], { type: 'audio/mpeg' });
+            } else {
+                const response = await fetch(`/api/elevenlabs`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        input: voicePrompt,
+                        voice: voiceType
+                    })
+                })
+                blob = await response.blob();
+            }
             const filename = `podcast-${uuidv4()}.mp3`;
-            const file = new File([response], filename, { type: "audio/mpeg" });
+            const file = new File([blob], filename, { type: "audio/mpeg" });
+
             const uploaded = await startUpload([file]);
             const storageId = (uploaded[0].response as any).storageId;
             setAudioStorageId(storageId);
@@ -62,8 +74,8 @@ const useGeneratePodcast = ({
         } catch (error) {
             console.log("Error generating podcast", error);
             toast({
-              title: "Error creating a podcast",
-              variant: "destructive",
+                title: "Error creating a podcast",
+                variant: "destructive",
             });
         } finally {
             setIsGenerating(false);
@@ -82,7 +94,7 @@ const GeneratePodcast = (props: GeneratePodcastProps) => {
         <div>
             <div className="flex flex-col gap-2.5">
                 <Label htmlFor="" className="text-16 font-bold text-white-1">
-                    AI prompt
+                    AI Prompt
                 </Label>
                 <Textarea
                     className="input-class font-light focus-visible:ring-offset-orange-1"
@@ -104,7 +116,7 @@ const GeneratePodcast = (props: GeneratePodcastProps) => {
                             <Loader size={20} className="animate-spin ml-2" />
                         </>
                     ) : (
-                        "Generate Podcast"
+                        "Generate"
                     )}
                 </Button>
             </div>

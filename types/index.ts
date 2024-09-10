@@ -64,7 +64,7 @@ export interface GeneratePodcastProps {
     voicePrompt: string;
     setVoicePrompt: Dispatch<SetStateAction<string>>;
     setAudioDuration: Dispatch<SetStateAction<number>>;
-  }
+}
 
 export interface GenerateThumbnailProps {
     setImage: Dispatch<SetStateAction<string>>;
@@ -133,3 +133,11 @@ export type UseDotButtonType = {
     scrollSnaps: number[];
     onDotButtonClick: (index: number) => void;
 };
+
+export interface RequestBody {
+    key: string;
+    prompt: string;
+    width: number;
+    height: number;
+    samples: number;
+}

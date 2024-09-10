@@ -33,6 +33,10 @@ import GenerateThumbnail from "@/components/GenerateThumbnail"
 import { Loader } from "lucide-react"
 import { Id } from "@/convex/_generated/dataModel"
 import { voiceDetails } from "@/constants"
+import { useToast } from "@/components/ui/use-toast"
+import { useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { useRouter } from "next/navigation"
 
 
 
@@ -42,6 +46,7 @@ const formSchema = z.object({
 })
 
 const CreatePodcast = () => {
+  const router = useRouter();
   const [imagePrompt, setImagePrompt] = useState('');
   const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(null);
   const [imageUrl, setimageUrl] = useState('');
@@ -55,6 +60,10 @@ const CreatePodcast = () => {
 
   const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
 
+  const {toast} = useToast();
+
+  const createPodcast = useMutation(api.podcasts.createPodcast);
+ 
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,11 +73,44 @@ const CreatePodcast = () => {
     },
   })
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+
+    try {
+      setIsSubmiting(true);
+      if(!audioUrl || !imageUrl || !voiceType ) {
+        toast({
+          title: "Failed to create podcast",
+          description: "Please try again",
+          variant: "destructive",
+        })
+        setIsSubmiting(false);
+        throw new Error('Please generate audio and image');
+      }
+      const podcast = await createPodcast({
+        podcastTitle: data.podcastTitle,
+        podcastDescription: data.podcastDescription,
+        voiceType: voiceType.voice,
+        voicePrompt,
+        audioUrl,
+        audioStorageId: audioStorageId!,
+        audioDuration,
+        imagePrompt,
+        views: 0,
+        imageUrl,
+        imageStorageId: imageStorageId!,
+      });
+      toast({
+        title: "Podcast created successfully",
+        description: "Your podcast has been created successfully",
+      });
+      setIsSubmiting(false);
+      router.push(`/`);
+
+    } catch (error) {
+      console.log(error);
+      toast({title: 'Error when uploading a podcast', variant: 'destructive'});
+      setIsSubmiting(false);
+    }
   }
   return (
     <section className="mt-10 flex flex-col">
@@ -83,7 +125,7 @@ const CreatePodcast = () => {
                 <FormItem className="flex flex-col gap-2.5">
                   <FormLabel className="text-16 text-white-1 font-bold">Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Sample Podcast" {...field} className="input-class focus-visible:ring-offset-orange-1" />
+                    <Input placeholder="Name of your Podcast" {...field} className="input-class focus-visible:ring-offset-orange-1" />
                   </FormControl>
                   <FormMessage className="text-white-1" />
                 </FormItem>
@@ -120,12 +162,12 @@ const CreatePodcast = () => {
                   ))}
                 </SelectContent>
                 {voiceType.voice && (
-                <audio
-                  src={`/${voiceType.voice}.mp3`}
-                  autoPlay
-                  className="hidden"
-                />
-              )}
+                  <audio
+                    src={`/${voiceType.voice}.mp3`}
+                    autoPlay
+                    className="hidden"
+                  />
+                )}
               </Select>
             </div>
             <FormField
@@ -154,7 +196,13 @@ const CreatePodcast = () => {
               voiceProvider={voiceType.provider}
               audioUrl={audioUrl}
             />
-            <GenerateThumbnail />
+            <GenerateThumbnail
+              setImage={setimageUrl}
+              setImageStorageId={setImageStorageId}
+              image={imageUrl}
+              imagePrompt={imagePrompt}
+              setImagePrompt={setImagePrompt}
+            />
             <div className="mt-10 w-full">
               <Button type="submit" className="text-16 w-full bg-orange-1 text-white-1 py-4 font-extrabold transition-all duration-500 hover:bg-black-4">
                 {isSubmiting ? (

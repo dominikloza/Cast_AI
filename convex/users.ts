@@ -23,7 +23,6 @@ export const getTopUserByPodcastCount = query({
     args: {},
     handler: async (ctx, args) => {
         const user = await ctx.db.query("users").collect();
-
         const userData = await Promise.all(
             user.map(async (u) => {
                 const podcasts = await ctx.db
@@ -38,7 +37,7 @@ export const getTopUserByPodcastCount = query({
                     totalPodcasts: podcasts.length,
                     podcast: sortedPodcasts.map((p) => ({
                         podcastTitle: p.podcastTitle,
-                        pocastId: p._id,
+                        podcastId: p._id,
                     })),
                 };
             })

@@ -49,7 +49,7 @@ const PodcastsDetails = ({ params: { podcastId } }: { params: { podcastId: Id<'p
       </div>
       <section className='mt-8 flex flex-col gap-5'>
         <h1 className='text-20 font-bold text-white-2'>Similar Podcasts</h1>
-        {!similarPodcasts && similarPodcasts.length > 0
+        {similarPodcasts && similarPodcasts.length > 0
           ? (
             <div className='podcast_grid'>
               {similarPodcasts?.map(({ _id, podcastTitle, podcastDescription, imageUrl }) => (

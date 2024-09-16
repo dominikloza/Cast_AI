@@ -180,6 +180,7 @@ export const updatePodcastViews = mutation({
             throw new ConvexError("Podcast not found");
         }
 
+        
         return await ctx.db.patch(args.podcastId, {
             views: podcast.views + 1,
         });

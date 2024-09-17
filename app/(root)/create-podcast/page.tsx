@@ -60,10 +60,10 @@ const CreatePodcast = () => {
 
   const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
 
-  const {toast} = useToast();
+  const { toast } = useToast();
 
   const createPodcast = useMutation(api.podcasts.createPodcast);
- 
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,7 +77,7 @@ const CreatePodcast = () => {
 
     try {
       setIsSubmiting(true);
-      if(!audioUrl || !imageUrl || !voiceType ) {
+      if (!audioUrl || !imageUrl || !voiceType) {
         toast({
           title: "Failed to create podcast",
           description: "Please try again",
@@ -85,20 +85,21 @@ const CreatePodcast = () => {
         })
         setIsSubmiting(false);
         throw new Error('Please generate audio and image');
+      } else {
+        await createPodcast({
+          podcastTitle: data.podcastTitle,
+          podcastDescription: data.podcastDescription,
+          voiceType: voiceType.voice,
+          voicePrompt,
+          audioUrl,
+          audioStorageId: audioStorageId!,
+          audioDuration,
+          imagePrompt,
+          views: 0,
+          imageUrl,
+          imageStorageId: imageStorageId!,
+        });
       }
-      const podcast = await createPodcast({
-        podcastTitle: data.podcastTitle,
-        podcastDescription: data.podcastDescription,
-        voiceType: voiceType.voice,
-        voicePrompt,
-        audioUrl,
-        audioStorageId: audioStorageId!,
-        audioDuration,
-        imagePrompt,
-        views: 0,
-        imageUrl,
-        imageStorageId: imageStorageId!,
-      });
       toast({
         title: "Podcast created successfully",
         description: "Your podcast has been created successfully",
@@ -108,7 +109,7 @@ const CreatePodcast = () => {
 
     } catch (error) {
       console.log(error);
-      toast({title: 'Error when uploading a podcast', variant: 'destructive'});
+      toast({ title: 'Error when uploading a podcast', variant: 'destructive' });
       setIsSubmiting(false);
     }
   }

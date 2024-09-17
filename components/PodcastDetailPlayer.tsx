@@ -49,6 +49,7 @@ const PodcastDetailPlayer = ({
 
     const handlePlay = async () => {
         await updateViews({podcastId});
+        console.log(audioUrl);
         setAudio({
             title: podcastTitle,
             audioUrl,

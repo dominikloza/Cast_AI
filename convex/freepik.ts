@@ -41,13 +41,7 @@ export const generateFreepikAction = action({
                     size: "square",
                     width: 1024,
                     heigh: 1024
-                },
-                styling: {
-                    style: "digital-art",
-                    color: "pastel",
-                    lightning: "warm",
-                    framing: "portrait",
-                },
+                }
             }),
         });
 

@@ -17,7 +17,7 @@ const LeftSidebar = () => {
         <section className='left_sidebar'>
             <nav className=' flex flex-col gap-6'>
                 <Link href="/" className='flex cursor-pointer items-center gap-2 pb-10 max-lg:justify-center'>
-                    <Image src="/icons/logo.svg" alt='logo' width={23} height={27} />
+                    <Image src="/images/logo.png" alt='logo' width={23} height={27} />
                     <h1 className='text-24 font-extrabold text-white max-lg:hidden'>Cast AI</h1>
                 </Link>
                 {sidebarLinks.map(({ route, label, imgUrl }) => {

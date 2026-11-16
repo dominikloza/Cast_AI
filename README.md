@@ -1,44 +1,65 @@
-# Cast_AI
-Easily turn text into podcasts using advanced AI technology. Create your own audio content or explore and listen to podcasts made by others. Perfect for creators and listeners alike!
+# Cast AI
 
-## Live: https://cast-ai-gamma.vercel.app/
+Turn text into a podcast: write a script, pick a voice from one of three AI providers, generate a cover image and publish it for others to listen to.
+
+**Live demo:** https://cast-ai-gamma.vercel.app
+
+> Built on top of a course project (JavaScript Mastery "Podcastr"). The base app, player and Convex data model come from the course; the multi-provider voice generation, the Freepik thumbnails, the profile page and the redesigned UI are my additions (see below).
+
 ## Features
 
-- Create account with Clrek.
-- Browsing of existiong podcast
-- Creating Podcast audio with diffrent AI voices and APIs.
-- Creating thumbnail for podcast using AI Freepik API.
-- Responsive Layout: Fully responsive design ensuring a great experience on all devices.
+- **Sign in** with Clerk; users are synced to Convex through a Clerk webhook.
+- **Text to speech from three providers:** OpenAI (alloy, echo, fable, onyx, nova, shimmer), ElevenLabs (Rachel, Drew) and Unreal Speech (Scarlett, Dan), with a voice sample to listen to before generating.
+- **AI cover images** from the Freepik text-to-image API, or your own upload.
+- **Browse and search** podcasts, a trending carousel, top podcasters and author profiles.
+- **Persistent player** that keeps playing while you browse.
+- Responsive layout for desktop and mobile.
 
+## What I added to the course project
 
-## Tech Stack
+| Area | Course version | This project |
+| --- | --- | --- |
+| Voices | OpenAI TTS only | OpenAI, ElevenLabs and Unreal Speech, chosen per provider (`convex/openai.ts`, `convex/unreal.ts`, `app/api/elevenlabs/route.ts`) |
+| Cover images | DALL-E | Freepik text-to-image API (`convex/freepik.ts`) |
+| Generation UI | single provider | rewritten `GeneratePodcast` and `GenerateThumbnail` with provider and voice selection |
+| Pages | profile by id | own profile page, discover page, sidebars and branding |
 
-- **Next.js**: A React-based framework for building server-rendered applications and static websites with full routing and API support.
-- **Tailwind CSS**: A utility-first CSS framework that enables quick development of responsive and well-designed user interfaces.
-- **Convex**: A Backend-as-a-Service (BaaS) that simplifies building and managing databases, state synchronization, and server-side logic without needing traditional backend setup.
-- **Clerk**: A complete authentication and authorization solution for managing user sign-ins, supporting social logins and security features like two-factor authentication (2FA).
+## Tech stack
 
+- **Next.js 14** (App Router) and **TypeScript**
+- **Convex** for the database, file storage and server actions
+- **Clerk** for authentication
+- **Tailwind CSS** and shadcn/ui
+- **OpenAI**, **ElevenLabs**, **Unreal Speech** and **Freepik** APIs
 
+## Run locally
 
-
-## Installation
-
-To get started with this project locally, follow these steps:
-
-**1. Clone the repository**:
 ```bash
-git clone https://github.com/yourusername/iphone-product-page.git
-```
-**2. Navigate to the project directory:**:
-```bash
-cd iphone-product-page
-```    
-**3. Install dependencies**:
-```bash
+git clone https://github.com/dominikloza/Cast_AI.git
+cd Cast_AI
 npm install
 ```
-**4. Install dependencies**:
+
+Create `.env.local`:
+
 ```bash
+NEXT_PUBLIC_CONVEX_URL=
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+CLERK_WEBHOOK_SECRET=
+OPENAI_API_KEY=
+ELEVENLABS_API_KEY=
+UNREAL_SPEECH_API_KEY=
+FREEPIK_API_KEY=
+```
+
+The AI keys used by Convex actions (`OPENAI_API_KEY`, `UNREAL_SPEECH_API_KEY`, `FREEPIK_API_KEY`) must also be set in the Convex dashboard (Settings > Environment Variables).
+
+Start Convex and Next.js in two terminals:
+
+```bash
+npx convex dev
 npm run dev
 ```
-**5. Open your browser and navigate to http://localhost:3000 to view the project.**
+
+Open http://localhost:3000.
